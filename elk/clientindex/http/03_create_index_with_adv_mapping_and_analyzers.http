@@ -1,0 +1,88 @@
+### CREATE THE INDEX
+
+PUT http://elastic.local/client
+
+
+### STOP THE INDEX
+
+POST http://elastic.local/client/_close
+
+### ADD THE ANALYZERS
+
+PUT http://elastic.local/client/_settings
+Content-Type: application/json
+
+{
+    "analysis": {
+        "analyzer": {
+            "search_text": {
+                "type": "custom",
+                "filter": [ "lowercase", "asciifolding", "cust_eng_stemmer", "cust_length" ],
+                "tokenizer": "standard"
+            },
+            "text": {
+                "type": "custom",
+                "filter": [ "lowercase", "asciifolding", "cust_eng_stemmer", "autocomplete_text_edgengram" ],
+                "tokenizer": "standard"
+            },
+            "phone_analyzer": {
+                "type": "custom",
+                "tokenizer": "phone_tokenizer"
+            }
+        },
+        "tokenizer": { 
+            "phone_tokenizer": {
+                "type": "edge_ngram",
+                "min_gram": 3,
+                "max_gram": 10,
+                "token_chars": [
+                    "digit"
+                ]
+            }
+        },      
+        "filter": {
+            "autocomplete_text_edgengram": {
+                "type": "edge_ngram",
+                "min_gram": 1,
+                "max_gram": 50
+            },
+            "cust_eng_stemmer": {
+                "type": "stemmer",
+                "language": "english"
+            },
+            "whitespace_remove": {
+                "type": "pattern_replace",
+                "pattern": " ",
+                "replacement": ""
+            },
+            "cust_length": {
+                "type": "length",
+                "min": 3
+            }
+        }
+    }
+}
+
+### ADD THE CLIENT MAPPING
+
+PUT http://elastic.local/client/_mapping/client
+Content-Type: application/json
+
+{
+    "properties": {
+        "id": { "type": "integer" },
+        "gender": { "type": "text" },
+        "salutation": { "type": "text" },
+        "firstnames": { "type": "text", "analyzer": "text", "search_analyzer": "search_text" },
+        "surname": { "type": "text", "analyzer": "text", "search_analyzer": "search_text" },
+        "dateofbirth": { "type": "date" },
+        "homephonenumber": { "type": "text", "analyzer": "text", "search_analyzer": "search_text" },
+        "workphonenumber": { "type": "text", "analyzer": "text", "search_analyzer": "search_text" },
+        "cellphonenumber": { "type": "text", "analyzer": "phone_analyzer", "search_analyzer": "search_text" },
+        "emailaddress": { "type": "text" }
+    }
+}
+
+### START THE INDEX
+
+POST http://elastic.local/client/_open

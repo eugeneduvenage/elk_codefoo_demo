@@ -1,0 +1,3 @@
+### DELETE THE INDEX
+
+DELETE http://elastic.local/client

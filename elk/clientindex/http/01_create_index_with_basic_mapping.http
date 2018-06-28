@@ -1,0 +1,22 @@
+### CREATE THE INDEX
+PUT http://elastic.local/client
+
+### ADD THE CLIENT MAPPING
+
+PUT http://elastic.local/client/_mapping/client
+Content-Type: application/json
+
+{
+    "properties": {
+        "id": { "type": "integer" },
+        "gender": { "type": "text" },
+        "salutation": { "type": "text" },
+        "firstnames": { "type": "text" },
+        "surname": { "type": "text" },
+        "dateofbirth": { "type": "date" },
+        "homephonenumber": { "type": "text" },
+        "workphonenumber": { "type": "text" },
+        "cellphonenumber": { "type": "text" },
+        "emailaddress": { "type": "text" }
+    }
+}

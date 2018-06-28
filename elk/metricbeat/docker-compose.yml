@@ -1,0 +1,14 @@
+version: '3.1'
+
+services: 
+
+  metricbeat:
+    image: docker.elastic.co/beats/metricbeat:6.3.0
+    restart: always
+    volumes:
+      - /proc:/hostfs/proc:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /:/hostfs:ro
+    command: -e -E output.elasticsearch.hosts=http://elastic.local:80 -E setup.kibana.host="http://kibana.local:80" -E setup.dashboards.enabled=true
+    container_name: metricbeat
+    network_mode: host
